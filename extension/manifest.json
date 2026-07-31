@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "NeoFlo Visual Agent",
+  "version": "1.0.0",
+  "description": "AI-powered browser activity monitor — classifies what you're working on using computer vision and GPT-4o.",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "alarms",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "NeoFlo Visual Agent"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
