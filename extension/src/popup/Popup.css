@@ -1,0 +1,481 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   NeoFlo Visual Agent — Popup UI
+   Premium dark-mode design, 380px fixed width
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --bg: #0d0d14;
+  --bg-card: rgba(255 255 255 / 0.045);
+  --bg-card-hover: rgba(255 255 255 / 0.075);
+  --border: rgba(255 255 255 / 0.08);
+  --border-accent: rgba(124 58 237 / 0.35);
+
+  --purple: #7c3aed;
+  --violet: #8b5cf6;
+  --blue: #3b82f6;
+  --grad: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+
+  --text: #eeeeff;
+  --text-2: rgba(238 238 255 / 0.6);
+  --text-3: rgba(238 238 255 / 0.32);
+
+  --green: #22c55e;
+  --amber: #f59e0b;
+
+  --r-sm: 8px;
+  --r-md: 12px;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 380px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ── Root wrapper ──────────────────────────────────────────────────────────── */
+.popup-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient radial glow — purely decorative */
+.ambient-glow {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124 58 237 / 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Loading ───────────────────────────────────────────────────────────────── */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--violet);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Consent screen ────────────────────────────────────────────────────────── */
+.consent-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 22px 24px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.consent-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(124 58 237 / 0.12);
+  border: 1.5px solid rgba(124 58 237 / 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet);
+  flex-shrink: 0;
+}
+
+.consent-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+
+.consent-desc {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+  max-width: 290px;
+}
+
+.consent-list {
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.consent-list li {
+  font-size: 12px;
+  color: var(--text-2);
+  padding: 7px 11px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.consent-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  padding-top: 2px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 11px;
+  background: var(--grad);
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: 0 4px 18px rgba(124 58 237 / 0.4);
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-ghost {
+  width: 100%;
+  padding: 9px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  font-size: 12.5px;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-ghost:hover { background: var(--bg-card); color: var(--text); }
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 13px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+/* Status dot */
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.status-dot.recording {
+  background: var(--green);
+  box-shadow: 0 0 7px var(--green);
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+.status-dot.paused {
+  background: var(--amber);
+  box-shadow: 0 0 7px var(--amber);
+}
+.status-dot.off {
+  background: rgba(255 255 255 / 0.22);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(1.25); }
+}
+
+.brand {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.status-label {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+/* ── Toggle ────────────────────────────────────────────────────────────────── */
+.toggle {
+  width: 50px;
+  height: 26px;
+  border-radius: 13px;
+  border: 1.5px solid var(--border);
+  background: rgba(255 255 255 / 0.06);
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.toggle.on {
+  background: var(--grad);
+  border-color: transparent;
+  box-shadow: 0 0 14px rgba(124 58 237 / 0.5);
+}
+
+.toggle:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.toggle-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0 0 0 / 0.3);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.toggle.on .toggle-thumb {
+  transform: translateX(23px);
+  color: var(--purple);
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────────── */
+.card {
+  margin: 10px 14px 0;
+  padding: 13px 15px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  backdrop-filter: blur(6px);
+  position: relative;
+  z-index: 1;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: var(--border-accent); }
+
+.card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.card-eyebrow svg { color: var(--violet); }
+
+/* ── Activity card ─────────────────────────────────────────────────────────── */
+.activity-name {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 9px;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+.activity-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.app-pill {
+  padding: 2px 8px;
+  background: rgba(124 58 237 / 0.18);
+  border: 1px solid rgba(124 58 237 / 0.28);
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--violet);
+  white-space: nowrap;
+}
+
+.confidence-track {
+  flex: 1;
+  height: 3.5px;
+  background: rgba(255 255 255 / 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: var(--grad);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.confidence-pct {
+  font-size: 11px;
+  color: var(--text-3);
+  min-width: 28px;
+}
+
+.activity-empty {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--text-3);
+  font-size: 12.5px;
+  min-height: 36px;
+}
+
+.pulse-ring {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  flex-shrink: 0;
+  animation: ring-pulse 1.6s ease-out infinite;
+}
+
+@keyframes ring-pulse {
+  0%   { transform: scale(0.75); opacity: 1; }
+  100% { transform: scale(1.5);  opacity: 0; }
+}
+
+/* ── Stats card ────────────────────────────────────────────────────────────── */
+.stats-row {
+  display: flex;
+  align-items: center;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.stat-value {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-value.status-glyph.recording { color: var(--green); }
+.stat-value.status-glyph.paused    { color: var(--amber); }
+.stat-value.status-glyph.off       { color: var(--text-3); }
+
+.stat-sub {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.stat-sep {
+  width: 1px;
+  height: 30px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── Controls ──────────────────────────────────────────────────────────────── */
+.controls-wrap {
+  padding: 10px 14px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-control {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.btn-control:hover {
+  background: var(--bg-card-hover);
+  color: var(--text);
+  border-color: var(--border-accent);
+}
+
+.btn-control.active {
+  background: rgba(245 158 11 / 0.1);
+  border-color: rgba(245 158 11 / 0.3);
+  color: var(--amber);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 14px 14px;
+  font-size: 10px;
+  color: var(--text-3);
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+}
+
+.footer-dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
