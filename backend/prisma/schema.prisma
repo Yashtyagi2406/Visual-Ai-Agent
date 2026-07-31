@@ -1,0 +1,84 @@
+// Prisma schema for NeoFlo Visual Agent
+// Run: npx prisma migrate dev --name init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── Models ─────────────────────────────────────────────────────────────────────
+
+model User {
+  /// Stable identifier for this extension install
+  id         String    @id @default(cuid())
+  installId  String    @unique
+  createdAt  DateTime  @default(now())
+
+  sessions   Session[]
+  events     Event[]
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events    Event[]
+}
+
+model Event {
+  id    String @id @default(cuid())
+
+  // ── Relations ──────────────────────────────────────────────────────────────
+  userId    String
+  sessionId String?
+
+  // ── Tab metadata (captured by extension) ──────────────────────────────────
+  tabUrl    String
+  tabTitle  String
+
+  // ── Screenshot (stored in S3/local, NOT as a DB blob) ─────────────────────
+  // Tradeoff: storing raw images in Postgres bloats the DB and makes
+  // replication/backup expensive. We keep a key + URL reference instead.
+  screenshotKey  String?  // S3 key or local filename
+  screenshotUrl  String?  // presigned or static URL for the vision API
+
+  // ── DOM signals (optional, from content.ts) ────────────────────────────────
+  // Stored as JSON to avoid schema churn as signal types evolve
+  domSignals  Json?  // { scrollDepthPercent, clickCount, isFocused, timestamp }
+
+  // ── AI classification (written by the queue worker) ────────────────────────
+  aiActivity    String?
+  aiApp         String?
+  aiConfidence  Float?
+
+  // ── Lifecycle timestamps ───────────────────────────────────────────────────
+  capturedAt  DateTime
+  labeledAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  // ── Processing state ───────────────────────────────────────────────────────
+  status        EventStatus @default(PENDING)
+  errorMessage  String?
+
+  // ── Relations ──────────────────────────────────────────────────────────────
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session  Session? @relation(fields: [sessionId], references: [id])
+
+  // ── Indexes ────────────────────────────────────────────────────────────────
+  @@index([userId, capturedAt(sort: Desc)])
+  @@index([userId, status])
+  @@index([status])
+}
+
+enum EventStatus {
+  PENDING   // Screenshot uploaded, queued for vision classification
+  LABELED   // Vision API returned a label, written to DB
+  FAILED    // Vision API call failed after retries
+}
