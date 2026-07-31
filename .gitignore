@@ -1,0 +1,49 @@
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.pnp.*
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+
+# ── Environment ───────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Extension ─────────────────────────────────────────────────────────────────
+extension/dist/
+extension/.crx
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+backend/dist/
+backend/uploads/        # local screenshot storage (not for git)
+
+# ── Prisma ────────────────────────────────────────────────────────────────────
+# Keep migrations, ignore generated client
+backend/node_modules/.prisma/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.Spotlight-V100
+.Trashes
+._*
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ── Coverage ──────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
